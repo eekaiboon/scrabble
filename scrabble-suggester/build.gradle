@@ -1,0 +1,21 @@
+apply plugin: 'application'
+
+dependencies {
+    compile (
+        project(':scrabble-common')
+    )
+    runtime (
+    )
+    testCompile (
+    )
+}
+
+mainClassName = "scrabble.suggester.ScrabbleSuggester"
+	
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    } else {
+        args = ['a', '5']
+    }
+}

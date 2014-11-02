@@ -1,0 +1,5 @@
+rootProject.name = 'scrabble'
+include 'scrabble-common',
+        'scrabble-indexer',
+        'scrabble-suggester',
+        'scrabble-analysis'

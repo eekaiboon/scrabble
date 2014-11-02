@@ -1,0 +1,21 @@
+apply plugin: 'application'
+
+dependencies {
+    compile (
+        project(':scrabble-common') 
+    )
+    runtime (
+    )
+    testCompile (
+    )
+}
+
+mainClassName = "scrabble.indexer.ScrabbleIndexer"
+	
+run {
+    if (project.hasProperty("appArgs")) {
+        args Eval.me(appArgs)
+    } else {
+        args = ['src/main/resources/word_list_moby_crossword.flat.txt']
+    }
+}
