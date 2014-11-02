@@ -64,4 +64,13 @@ For example, the following happens if max-n is 3 and query is 'foob' :
 
 Also, we would want to split the index file into a number of buckets so that we will not need to load all index during query time. The bucket which a n-gram will go to is based on the hash value of the n-gram modulo by the number of bucket.
 
-## How Do We Pick Max-N and Number of Bucket
+## How To Pick Max-N
+
+The first plot below shows the coverage percentage versus n-gram. The second plot below shows the index size versus n-gram. You can find the raw data at [nGramWordCount_plot.xls](analysis/nGramWordCount_plot.xls). We can see that index size grows as we have more n-grams. We want to find a balance between coverage percentage and index size. Here, I choose max-n to be 4 as it has coverage of about 65% and will generate index with size 50% of the maximum index size. 
+
+![coveragePercentageVsNGram](analysis/coveragePercentageVsNGram.png)
+
+![indexSizeVsNGram] (analysis/indexSizeVsNGram.png)
+
+
+## How To Pick Number of Bucket
