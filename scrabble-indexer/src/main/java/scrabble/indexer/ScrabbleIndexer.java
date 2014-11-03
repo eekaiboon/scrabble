@@ -28,7 +28,7 @@ public class ScrabbleIndexer {
     
     private static final int MAX_N_GRAMS = 4;
     private static final int INITIAL_CAPACITY = 11;
-    private static final int NUM_OF_BUCKET = 50;
+    private static final int NUM_OF_BUCKET = 700;
     
     private static final String INDEX_DIRECTORY = "index";
     private static final String N_GRAM_PATH = INDEX_DIRECTORY + "/ngrams_";
@@ -54,7 +54,7 @@ public class ScrabbleIndexer {
         
         rankWord(path);
         
-        log.info("Building nGramMap");
+        log.debug("Building nGramMap");
         final long start = System.currentTimeMillis();
         
         try (Stream<String> stream = Files.lines(path)) {
@@ -86,7 +86,7 @@ public class ScrabbleIndexer {
             throw new IOException("Error while indexing", e);
         }
 
-        log.info("Completed building nGramMap. Time Spent (msec) : " +
+        log.debug("Completed building nGramMap. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
         
         writeNGramToDisk();
@@ -96,7 +96,7 @@ public class ScrabbleIndexer {
     // Each word and its rank are being stored in wordRankMap
     // Write the sorted words to disk
     private void rankWord(Path path) throws IOException {
-        log.info("Ranking word");
+        log.debug("Ranking word");
         final long start = System.currentTimeMillis();
         
         PriorityQueue<Word> pq = 
@@ -129,21 +129,21 @@ public class ScrabbleIndexer {
             sb.append(",");
         }
         
-        log.info("Word with max length : " + wordWithMaxLength + " (" + maxLength + ")");
+        log.debug("Word with max length : " + wordWithMaxLength + " (" + maxLength + ")");
 
         writeIndexWordToDisk(sb.toString());
         
-        log.info("Completed ranking word. Time Spent (msec) : " +
+        log.debug("Completed ranking word. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
     }
     
     private void writeIndexWordToDisk(String s) throws IOException {
-        log.info("Writing index word to disk");
+        log.debug("Writing index word to disk");
         final long start = System.currentTimeMillis();
         
         Files.write(Paths.get(WORD_FILE), s.getBytes());
 
-        log.info("Completed writing index word to disk. Time Spent (msec) : " +
+        log.debug("Completed writing index word to disk. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
     }
     
@@ -152,7 +152,7 @@ public class ScrabbleIndexer {
     // partially when making suggestions. This will speed up the suggestion
     // computation time.
     private void writeNGramToDisk() throws IOException {
-        log.info("Writing index ngram to disk");
+        log.debug("Writing index ngram to disk");
         final long start = System.currentTimeMillis();
 
         List<StringBuilder> buckets = new ArrayList<>(numOfBucket);
@@ -186,7 +186,7 @@ public class ScrabbleIndexer {
             Files.write(Paths.get(N_GRAM_PATH + i), buckets.get(i).toString().getBytes());
         }
         
-        log.info("Completed writing index ngram to disk. Time Spent (msec) : " +
+        log.debug("Completed writing index ngram to disk. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
     }
     

@@ -46,6 +46,7 @@ public class ScrabbleSuggesterTest {
     @Before
     public void setUp() throws ClassNotFoundException, IOException {
         scrabbleSuggester = new ScrabbleSuggester(3, INDEX_FILE);
+        scrabbleSuggester.setNumOfBucket(50);
     }
 
     @Test

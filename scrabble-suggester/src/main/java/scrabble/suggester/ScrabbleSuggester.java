@@ -30,7 +30,7 @@ public class ScrabbleSuggester {
 
     private static final int MAX_N_GRAMS = 4;
     private static final int INITIAL_CAPACITY = 11;
-    private static final int NUM_OF_BUCKET = 50;
+    private static final int NUM_OF_BUCKET = 700;
 
     private static final String INDEX_DIRECTORY = "index";
     
@@ -74,7 +74,7 @@ public class ScrabbleSuggester {
     // Load words
     // Build rank to word map
     private void readWordFromDisk() throws IOException {
-        log.info("Start loading words");
+        log.debug("Start loading words");
         final long start = System.currentTimeMillis();
 
         try {
@@ -90,7 +90,7 @@ public class ScrabbleSuggester {
             throw new IOException("Error while reading words", e);
         }
 
-        log.info("Completed loading words. Time Spent (msec) : " +
+        log.debug("Completed loading words. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
     }
     
@@ -142,11 +142,11 @@ public class ScrabbleSuggester {
                 }
             });
         
-        log.info("Number of index file read : " + indexFileToNGramsMap.size());
+        log.debug("Number of index file read : " + indexFileToNGramsMap.size());
     }
 
     public List<Word> suggest(String query, int top) {
-        log.info("Computing suggestions");
+        log.debug("Computing suggestions");
         final long start = System.currentTimeMillis();
         
         List<Word> suggestions = new ArrayList<>();
@@ -190,7 +190,7 @@ public class ScrabbleSuggester {
             suggestions.add(candidates.poll());
         }
 
-        log.info("Completed computing suggestions. Time Spent (msec) : " +
+        log.debug("Completed computing suggestions. Time Spent (msec) : " +
                 ((System.currentTimeMillis() - start)));
         
         return suggestions;

@@ -7,12 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -115,7 +117,7 @@ public class ScrabbleIndexerAnalysisMain {
             log.error("Error while writing to extracted words file", e);
         }
         
-        log.info("Number of words extracted (with minimum length " + minLength + ") : " + words.size());
+        System.out.println("Number of words extracted (with minimum length " + minLength + ") : " + words.size());
     }
     
     public static void randomWordGenerator(int minLength, int numOfWord) {
@@ -183,9 +185,8 @@ public class ScrabbleIndexerAnalysisMain {
         log.info("Randomly picked " + numOfWord + " words with minimum length of " + minLength);
     }
     
-    public static void findOptimalNumOfBucket() {
-        final int[] numOfBuckets = new int[] {5, 10, 15, 25, 50, 75, 100, 150, 250, 500};
-//        final int[] numOfBuckets = new int[] {5};
+    public static Map<Integer, Long> findOptimalNumOfBucket() {
+        final int[] numOfBuckets = new int[] {250, 500, 750, 1000, 1250, 1500};
         Map<Integer, Long> records = new HashMap<>();
         final int maxNGram = 4;
         final int minLength = 5;
@@ -241,12 +242,48 @@ public class ScrabbleIndexerAnalysisMain {
         }
         
         System.out.println("Number of bucket to time taken map : " + records);
+        return records;
     }
     
     public static void main (String[] args) {
-        final int numOfQueries = 5_000;
+        
+        final int numOfQueries = 500;
+        final int numOfIteration = 5;
         System.out.println("Number of queries = " + numOfQueries);
-        generateTestWords(5, numOfQueries);
-        findOptimalNumOfBucket();
+        
+        Map<Integer, List<Long>> records = new TreeMap<>();
+        
+        for (int i = 0; i < numOfIteration; i++) {
+            System.out.println("Iter-" + i);
+            
+            generateTestWords(5, numOfQueries);
+            Map<Integer, Long> iterRecord = findOptimalNumOfBucket();
+            
+            Stream.of(iterRecord)
+                .map(Map::entrySet)
+                .flatMap(Collection::stream)
+                .forEach(e -> {
+                    if (records.containsKey(e.getKey())) {
+                        records.get(e.getKey()).add(e.getValue());
+                    } else {
+                        List<Long> times = new ArrayList<>();
+                        times.add(e.getValue());
+                        records.put(e.getKey(), times);
+                    }
+                });
+        }
+        
+        Stream.of(records)
+        .map(Map::entrySet)
+        .flatMap(Collection::stream)
+        .forEach(e -> { 
+            System.out.println(e.getKey() + " = " + e.getValue());
+            int total = 0;
+            for (long time : e.getValue()) {
+                total += time;
+            }
+            System.out.println(e.getKey() + " = " + (total / e.getValue().size()));
+        });
+            
     }
 }
