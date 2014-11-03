@@ -83,3 +83,21 @@ We compile a list of test queries which will be used for testing with different 
 * 5-gram to 21-gram of all scrabble words (I do not genereate n-gram with n less than 5 since I have picked max-n to be 4. This implies that any queries with length 4 or less will have a exact match from the index) (number of queries - 109k)
 * Randomly generated queries of length 5 to 21 (number of queries - 100k)
 
+I ran 5 iteration with the following setting:
+* Different set of 500 test queries
+* Top 100 suggestions for each test query
+* With bucket size : 500, 600, 700, 800, 900, 1000
+ 
+This plot shows the result from the run:
+
+![averageQueryTimeVsNumberOfBucket.png](analysis/averageQueryTimeVsNumberOfBucket.png)
+
+Hence, I have chosen number of bucket to be 700.
+
+# Project Structure
+
+The top level project is called scrabble. I have 4 sub-module within the scrabble project :
+* scrabble-common : contains classes which are common to all sub-modules
+* scrabble-indexer : contains the indexer logic
+* scrabble-suggester : contains the suggester logic
+* scrabble-analysis : contains codes that i used for doing analysis
