@@ -1,5 +1,6 @@
 # Scrabble Suggester
-This is a scrabble suggestion engine for Scrabble. For a given query, user wil be able to query (Q) for top (K) scoring scrabble words that contain the query anywhere in the word. For example, if use query for top 5 suggestion for "XXX", the scrabble suggester will return XXX.
+
+This is a scrabble suggestion engine for Scrabble. For a given query, user wil be able to query (Q) for top (K) scoring scrabble words that contain the query anywhere in the word. For example, if use query for top 5 suggestion for "test", the scrabble suggester will return frequentest (score - 23), incontestably (score - 20), unquietest (score - 19), counterprotests (score - 19), and squintest (score - 18).
 
 The scrabble score is a sum of all the letter points in a word :
 
@@ -13,30 +14,33 @@ The scrabble score is a sum of all the letter points in a word :
 | 8 | J, X |
 | 10 | Q, Z |
 
-The accepted list of scrabble words can be found in the data directory.
+The accepted list of scrabble words can be found at [word_list_moby_crossword.flat.txt](data/word_list_moby_crossword.flat.txt).
 
 # Before Installation
+
 Make sure you have the following before starting installation :
 * Java 8
 * Gradle
 
 # How to Install and Run
+
 * Run install.sh
 * Cd into the "run" directory
 * Index all scrabble words
 ```
-scrabble-indexer <scrabble-word-file>
+./scrabble-indexer <scrabble-word-file>
 
-e.g. scrabble-indexer ../data/word_list_moby_crossword.flat.txt
+e.g. ./scrabble-indexer ../data/word_list_moby_crossword.flat.txt
 ```
 * Query with scrabble suggester
 ```
-scrabble-suggester <query> <top-k>
+./scrabble-suggester <query> <top-k>
 
-e.g. scrabble-suggester good 5
+e.g. ./scrabble-suggester test 5
 ```
 
 # How It Works
+
 In a brute force method, we scan through all scrabble words and find all matches for a query. Then, we score all matches accordingly and return the top-k matches as suggestions. However, this is not efficient as it involves scanning through all scrabble words and inspecting each word to check if it is a match.
 
 A scrabble word could be a match of various queries. For example, a scrabble word "foobar" could be a match for query 'f', 'ba', 'oba', 'foob', 'fooba', 'foobar', etc. To improve the suggestion computation time, we pre-compute a set of queries that could be a match for a scrabble word. The set of queries that we pre-compute are called n-grams. For more information about n-grams, please refer to : http://en.wikipedia.org/wiki/N-gram.
@@ -60,8 +64,22 @@ For example, the following happens if max-n is 3 and query is 'foob' :
 * Compute max-n-gram for the query : 'foo' and 'oob'
 * Retrieve list of matched scrabble words for both 'foo' and 'oob'
 * Check each of scrabble words to make sure that it contains 'foob'
-* Rank all of valid matches and return top-k matches as suggestions
+* Rank all valid matches and return top-k matches as suggestions
 
 Also, we would want to split the index file into a number of buckets so that we will not need to load all index during query time. The bucket which a n-gram will go to is based on the hash value of the n-gram modulo by the number of bucket.
 
-## How Do We Pick Max-N and Number of Bucket
+## How To Pick Max-N
+
+The first plot below shows the coverage percentage versus n-gram. The second plot below shows the index size versus n-gram. You can find the raw data at [nGramWordCount_plot.xls](analysis/nGramWordCount_plot.xls). We can see that index size grows as we have more n-grams. We want to find a balance between coverage percentage and index size. Here, I choose max-n to be 4 as it has coverage of about 65% and will generate index with size 50% of the possible maximum index size. 
+
+![coveragePercentageVsNGram](analysis/coveragePercentageVsNGram.png)
+
+![indexSizeVsNGram] (analysis/indexSizeVsNGram.png)
+
+
+## How To Pick Number of Bucket
+
+We compile a list of test queries which will be used for testing with different number of bucket. These are the original sources where I randomly pick p number of test queries from :
+* 5-gram to 21-gram of all scrabble words (I do not genereate n-gram with n less than 5 since I have picked max-n to be 4. This implies that any queries with length 4 or less will have a exact match from the index) (number of queries - 109k)
+* Randomly generated queries of length 5 to 21 (number of queries - 100k)
+
